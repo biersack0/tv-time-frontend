@@ -1,1 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
+$primary: #08012a;
+$seconday: #0b0132;
+// $primary: #06001F;
+// $seconday: #374151;
+
+.c-bg-primary{
+    background-color: $primary;
+}
+
+.c-bg-secondary{
+    background-color: $seconday;
+}
+
+@media(min-width: 768px){
+    .c-row-cols-md-8>*{
+        flex:0 0 auto;
+        width:12.5%;
+    }
+}

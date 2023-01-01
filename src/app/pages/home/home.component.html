@@ -1,0 +1,81 @@
+<!-- Page Title-->
+<div class="c-bg-secondary pt-4 pb-5">
+	<div class="container pt-2 pb-3 pt-lg-3 pb-lg-4">
+		<div>
+			<div class="bg-light shadow-lg rounded-2 mb-4">
+				<div class="d-flex">
+					<!-- Search-->
+					<div class="w-100">
+						<div class="input-group pe-sm-3">
+							<input
+								class="form-control bg-transparent rounded-0 border-0 shadow-none ps-5 py-3"
+								type="text"
+								(ngModelChange)="termToSearch.next($event)"
+								[(ngModel)]="searchBox"
+								placeholder="" /><i
+								class="ci-search position-absolute top-50 start-0 translate-middle-y zindex-5 ms-3 fs-lg text-muted"></i>
+						</div>
+					</div>
+					<!-- Sorting-->
+					<div class="flex-shrink-0 border-start">
+						<div class="dropdown">
+							<button
+								class="btn border-0 p-3 fw-medium"
+								type="button"
+								data-bs-toggle="dropdown"
+								aria-haspopup="true"
+								aria-expanded="false">
+								<span class="d-sm-inline d-none">Categorías</span
+								><i class="ci-arrow-down ms-sm-2 fs-sm"></i>
+							</button>
+							<div class="dropdown-menu dropdown-menu-end w-100">
+								<a
+									class="dropdown-item"
+									style="white-space: normal"
+									[ngClass]="{ active: 'all' === categoryActived }"
+									(click)="filterByCategory('all')"
+									>Todas</a
+								>
+								<a
+									class="dropdown-item"
+									style="white-space: normal"
+									[ngClass]="{ active: category === categoryActived }"
+									*ngFor="let category of categories"
+									(click)="filterByCategory(category)"
+									>{{ category | titlecase }}</a
+								>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="d-lg-flex justify-content-between pb-3">
+			<div class="order-lg-1 pe-lg-4 text-center text-lg-start">
+				<h1 class="h3 text-light mb-0">
+					Canales {{ categoryActived === 'all' ? '' : '| ' + categoryActived }}
+				</h1>
+			</div>
+		</div>
+
+		<div class="min-height-channels">
+			<div class="row row-cols-3 row-cols-sm-4 c-row-cols-md-8 gy-3 pt-sm-3">
+				<div class="col mb-2" *ngFor="let channel of channels">
+					<article
+						class="h-100 border-0 shadow"
+						[routerLink]="['/canal', channel.tag]">
+						<div class="rounded position-relative overflow-hidden">
+							<a class="d-block"
+								><img
+									src="{{ channel.image }}"
+									class="img-fluid"
+									alt="{{ channel.name }}"
+							/></a>
+						</div>
+					</article>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
