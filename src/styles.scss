@@ -17,3 +17,14 @@ $seconday: #0b0132;
         width:12.5%;
     }
 }
+
+.cursor-pointer{
+    cursor: pointer;
+}
+
+
+:root{
+    .table-dark{
+        --cz-table-bg: $primary !important
+    }
+}

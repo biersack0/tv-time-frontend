@@ -14,7 +14,6 @@ import { Utils } from '@app/shared/utils/utils';
 export class ChannelDetailComponent implements OnInit {
 	channels: Channel[] = [];
 	channel: Channel | undefined;
-	error = false;
 	hour: Observable<string> | undefined;
 	currentProgram: Schedule[] | undefined;
 	disablePrevButton = false;
@@ -22,6 +21,9 @@ export class ChannelDetailComponent implements OnInit {
 	currentIndexInChannels = 0;
 	categories: Category[] = [];
 	categoryActived = 'all';
+	iframe = '';
+	isLoading = true;
+	hasError = false;
 
 	constructor(
 		private activatedRoute: ActivatedRoute,
@@ -35,26 +37,30 @@ export class ChannelDetailComponent implements OnInit {
 			distinctUntilChanged()
 		);
 
-		// Verified if exists in storage channels
+		// Verified if exists channels in sessionStorage
 		if (sessionStorage.getItem('ch')) {
 			this.channels = new Utils().loadFromSessionStorage();
 			this.getCategories(this.channels);
+			this.getChannelFromUrl();
 		} else {
 			this.getChannels();
 		}
 
+		this.verifyIfExistsCategoryInStorage();
+	}
+
+	getChannelFromUrl() {
 		this.activatedRoute.params
 			.pipe(switchMap(({ tag }) => this.channelService.getChannel(tag)))
 			.subscribe({
-				next: (res) => {
-					this.channel = res;
-					this.getCurrentProgram(res);
-					this.getCurrentIndexInChannels(res);
+				next: (channel) => {
+					this.channel = channel;
+					this.getCurrentProgram(channel);
+					this.getCurrentIndexInChannels(channel);
+					this.decodeIframe(channel);
 				},
-				error: () => (this.error = true),
+				error: () => (this.hasError = true),
 			});
-
-		this.verifyIfExistsCategoryInStorage();
 	}
 
 	verifyIfExistsCategoryInStorage() {
@@ -67,9 +73,10 @@ export class ChannelDetailComponent implements OnInit {
 	getChannels() {
 		this.channelService.getAllChannel().subscribe({
 			next: (channels) => {
-				new Utils().saveToSessionStorage(channels);
 				this.channels = channels;
+				new Utils().saveToSessionStorage(channels);
 				this.getCategories(this.channels);
+				this.getChannelFromUrl();
 			},
 		});
 	}
@@ -78,11 +85,11 @@ export class ChannelDetailComponent implements OnInit {
 		if (res.schedules.length > 0) {
 			this.hour?.subscribe({
 				next: (hour) => {
-					const current = moment(hour, 'h:mm');
+					const current = moment(hour, 'h:mm A');
 
 					const currentProgram = res.schedules.filter((schedule) => {
-						const beginningTime = moment(schedule.start, 'h:mm');
-						const endTime = moment(schedule.end, 'h:mm');
+						const beginningTime = moment(schedule.start, 'h:mm A');
+						const endTime = moment(schedule.end, 'h:mm A');
 
 						return current.isAfter(beginningTime) && current.isBefore(endTime);
 					});
@@ -100,7 +107,7 @@ export class ChannelDetailComponent implements OnInit {
 			return decodeURIComponent(url).replace(/!&/g, 'a');
 		});
 
-		return iframes[0];
+		this.iframe = iframes[0];
 	}
 
 	getCurrentIndexInChannels(channel: Channel) {
@@ -162,5 +169,11 @@ export class ChannelDetailComponent implements OnInit {
 
 		this.channels = channelsFiltered;
 		this.router.navigate(['/canal', channelsFiltered[0].tag]);
+	}
+
+	hideLoading(): void {
+		setTimeout(() => {
+			this.isLoading = false;
+		}, 3000);
 	}
 }

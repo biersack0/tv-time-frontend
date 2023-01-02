@@ -1,93 +1,103 @@
-<!-- [src]="channel.ifr[0] | safe" -->
-<div class="c-bg-secondary">
-	<div *ngIf="error; else channelDetail">
-		<p>Canal no encontrado</p>
-	</div>
+<div
+	class="container-height c-bg-secondary"
+	*ngIf="!hasError; else showViewError">
+	<div class="container">
+		<div class="row">
+			<div class="col-12 py-3">
+				<h5 class="text-center text-white position-relative" *ngIf="channel">
+					{{ channel.name | uppercase }}
+					<span class="position-absolute top-0 end-0 pr-hour">
+						{{ hour | async }}
+					</span>
+				</h5>
+				<h6 *ngIf="currentProgram" class="text-center text-white">
+					{{ currentProgram[0].title }}
+				</h6>
+			</div>
 
-	<ng-template #channelDetail>
-		<div class="container">
-			<div class="row" *ngIf="channel">
-				<div class="col-12 py-3">
-					<h5 class="text-center text-white position-relative">
-						{{ channel.name | uppercase }}
-						<div class="position-absolute top-0 end-0">
-							{{ hour | async }}
-						</div>
-					</h5>
-					<h6 *ngIf="currentProgram" class="text-center text-white">
-						{{ currentProgram[0].title }}
-					</h6>
-				</div>
-				<div class="col-12">
-					<div style="width: 80%; margin: auto">
-						<div class="position-relative" style="padding-top: 56.25%">
-							<iframe
-								[src]="decodeIframe(channel) | safe"
-								width="100%"
-								height="100%"
-								class="position-absolute"
-								style="top: 0; left: 0; right: 0; bottom: 0"
-								allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
-								sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
-								allowfullscreen
-								id="playframe"
-								scrolling="no"></iframe>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-12 d-flex justify-content-center">
-					<div class="btn-group my-4" role="group">
-						<button
-							type="button"
-							class="btn btn-primary"
-							[ngClass]="{ disabled: disablePrevButton }"
-							(click)="goPrevChannel()">
-							Anterior
-						</button>
-						<button
-							type="button"
-							class="btn btn-primary"
-							(click)="goHomeChannel()">
-							Inicio
-						</button>
-						<button
-							type="button"
-							class="btn btn-primary"
-							[ngClass]="{ disabled: disableNextButton }"
-							(click)="goNextChannel()">
-							Siguiente
-						</button>
-						<div class="btn-group" role="group">
-							<button
-								type="button"
-								class="btn btn-primary dropdown-toggle"
-								data-bs-toggle="dropdown"
-								aria-haspopup="true"
-								aria-expanded="false">
-								{{ categoryActived === 'all' ? 'Todas' : categoryActived }}
-							</button>
-							<div class="dropdown-menu dropdown-menu-end">
-								<a
-									class="dropdown-item"
-									[ngClass]="{ active: 'all' === categoryActived }"
-									(click)="filterByCategory('all')"
-									>Todas</a
-								>
-								<a
-									class="dropdown-item"
-									[ngClass]="{ active: category === categoryActived }"
-									(click)="filterByCategory(category)"
-									*ngFor="let category of categories"
-									>{{ category | titlecase }}</a
-								>
+			<div class="col-12">
+				<div style="width: 80%; margin: auto">
+					<div class="position-relative" style="padding-top: 56.25%">
+						<div *ngIf="isLoading" class="iframe">
+							<div
+								class="h-100 d-flex justify-content-center align-items-center">
+								<div class="spinner-grow text-primary mx-2" role="status"></div>
+								<div class="spinner-grow text-primary mx-2" role="status"></div>
+								<div class="spinner-grow text-primary mx-2" role="status"></div>
 							</div>
 						</div>
+
+						<iframe
+							[src]="iframe | safe"
+							(load)="hideLoading()"
+							class="iframe"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
+							sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation"
+							allowfullscreen
+							id="playframe"
+							scrolling="no"></iframe>
 					</div>
 				</div>
+			</div>
+
+			<div class="col-12 d-flex justify-content-center">
+				<div class="btn-group my-4" role="group">
+					<button
+						type="button"
+						class="btn btn-primary"
+						[ngClass]="{ disabled: disablePrevButton }"
+						(click)="goPrevChannel()">
+						<i class="ci-arrow-left text-white h5 mb-0 d-block d-sm-none"></i>
+						<span class="d-none d-sm-block">Anterior</span>
+					</button>
+					<button
+						type="button"
+						class="btn btn-primary"
+						(click)="goHomeChannel()">
+						<i class="ci-home text-white h5 mb-0 d-block d-sm-none"></i>
+						<span class="d-none d-sm-block">Inicio</span>
+					</button>
+					<button
+						type="button"
+						class="btn btn-primary"
+						[ngClass]="{ disabled: disableNextButton }"
+						(click)="goNextChannel()">
+						<i class="ci-arrow-right text-white h5 mb-0 d-block d-sm-none"></i>
+						<span class="d-none d-sm-block">Siguiente</span>
+					</button>
+					<div class="btn-group" role="group">
+						<button
+							type="button"
+							class="btn btn-primary dropdown-toggle"
+							data-bs-toggle="dropdown"
+							aria-haspopup="true"
+							aria-expanded="false">
+							{{ categoryActived === 'all' ? 'Todas' : categoryActived }}
+						</button>
+						<div class="dropdown-menu dropdown-menu-end">
+							<a
+								class="dropdown-item"
+								[ngClass]="{ active: 'all' === categoryActived }"
+								(click)="filterByCategory('all')"
+								>Todas</a
+							>
+							<a
+								class="dropdown-item"
+								[ngClass]="{ active: category === categoryActived }"
+								(click)="filterByCategory(category)"
+								*ngFor="let category of categories"
+								>{{ category | titlecase }}</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- *ngIf="channel.schedules.length > 0" -->
+			<div *ngIf="channel && currentProgram">
 				<div class="col-12" *ngIf="channel.schedules.length > 0">
 					<div class="table-responsive fs-md mb-4">
-						<table class="table mb-0">
+						<table class="table table-dark mb-0">
 							<thead>
 								<tr>
 									<th style="color: white !important">H.Inicio</th>
@@ -97,13 +107,31 @@
 							</thead>
 							<tbody>
 								<tr *ngFor="let schedule of channel.schedules">
-									<td class="py-2" style="color: white !important">
+									<td
+										class="py-2"
+										[ngClass]="
+											schedule.start === currentProgram[0].start
+												? 'text-primary'
+												: 'text-white'
+										">
 										{{ schedule.start }}
 									</td>
-									<td class="py-2" style="color: white !important">
+									<td
+										class="py-2"
+										[ngClass]="
+											schedule.start === currentProgram[0].start
+												? 'text-primary'
+												: 'text-white'
+										">
 										{{ schedule.end }}
 									</td>
-									<td class="py-2" style="color: white !important">
+									<td
+										class="py-2"
+										[ngClass]="
+											schedule.start === currentProgram[0].start
+												? 'text-primary'
+												: 'text-white'
+										">
 										{{ schedule.title }}
 									</td>
 								</tr>
@@ -113,5 +141,25 @@
 				</div>
 			</div>
 		</div>
-	</ng-template>
+	</div>
 </div>
+
+<!-- hasErrorLoadingChannel -->
+<ng-template #showViewError>
+	<div class="container-height c-bg-secondary d-flex align-items-center">
+		<div class="container">
+			<div class="row">
+				<div class="col-12 text-center">
+					<h1 class="display-404 py-lg-3 text-primary">404</h1>
+					<h2 class="h3 mb-4 text-white">No encontramos ese canal</h2>
+					<div class="d-flex justify-content-center align-items-center">
+						<div class="cursor-pointer" routerLink="['/']">
+							<i class="ci-home text-primary me-2"></i>
+							<span class="text-white fs-md">Regresar al inicio</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</ng-template>

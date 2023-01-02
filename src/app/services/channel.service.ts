@@ -6,7 +6,7 @@ import { Channel } from '@app/interfaces/channel.interface';
 	providedIn: 'root',
 })
 export class ChannelService {
-	// private apiUrl = 'http://localhost:3000/api';
+	// private apiUrl = 'http://localhost:3005/api';
 	private apiUrl = 'https://tv-time-api.dev.alexbsk.com/api';
 
 	constructor(private httpClient: HttpClient) {}
