@@ -16,11 +16,11 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "ESNext",
-    "module": "ESNext",
+    "target": "es6",
+    "module": "es6",
     "useDefineForClassFields": false,
     "lib": [
-      "ESNext",
+      "es6",
       "dom"
     ],
     "paths": {
