@@ -128,6 +128,7 @@ export class ChannelDetailComponent implements OnInit {
 	}
 
 	goPrevChannel() {
+		this.currentProgram = [];
 		if (this.disablePrevButton) return;
 
 		const prevChannel = this.channels[this.currentIndexInChannels - 1];
@@ -139,6 +140,7 @@ export class ChannelDetailComponent implements OnInit {
 	}
 
 	goNextChannel() {
+		this.currentProgram = [];
 		if (this.disableNextButton) return;
 
 		const nextChannel = this.channels[this.currentIndexInChannels + 1];

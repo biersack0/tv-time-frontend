@@ -15,3 +15,9 @@
     right: 0;
     bottom: 0;
 }
+
+@media tv and (min-width: 768px) and (orientation: landscape) {
+    .tv-device{
+        width: 70%;
+    }
+}
