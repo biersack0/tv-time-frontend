@@ -16,7 +16,7 @@
     bottom: 0;
 }
 
-@media tv and (min-width: 768px) and (orientation: landscape) {
+@media (min-width: 768px) {
     .tv-device{
         width: 70%;
     }
