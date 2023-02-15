@@ -1,20 +1,22 @@
 import { ChannelService } from '@app/services/channel.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Category, Channel, Schedule } from '@app/interfaces/channel.interface';
 import { distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import * as moment from 'moment';
-import { Observable, timer } from 'rxjs';
+import { Observable, Subscription, timer } from 'rxjs';
 import { Utils } from '@app/shared/utils/utils';
 @Component({
 	selector: 'app-channel-detail',
 	templateUrl: './channel-detail.component.html',
 	styleUrls: ['./channel-detail.component.scss'],
 })
-export class ChannelDetailComponent implements OnInit {
+export class ChannelDetailComponent implements OnInit, OnDestroy {
 	channels: Channel[] = [];
 	channel: Channel | undefined;
-	hour: Observable<string> | undefined;
+	// hour: Observable<string> | undefined;
+	hourSubscrition!: Subscription;
+	hour = '';
 	currentProgram: Schedule[] | undefined;
 	disablePrevButton = false;
 	disableNextButton = false;
@@ -32,10 +34,9 @@ export class ChannelDetailComponent implements OnInit {
 	) {}
 
 	ngOnInit(): void {
-		this.hour = timer(0, 1000).pipe(
-			map(() => moment().format('H:mm')),
-			distinctUntilChanged()
-		);
+		this.hourSubscrition = this.getCurrentHour().subscribe({
+			next: (data) => (this.hour = data),
+		});
 
 		// Verified if exists channels in sessionStorage
 		if (sessionStorage.getItem('ch')) {
@@ -49,13 +50,24 @@ export class ChannelDetailComponent implements OnInit {
 		this.verifyIfExistsCategoryInStorage();
 	}
 
+	ngOnDestroy(): void {
+		this.hourSubscrition.unsubscribe();
+	}
+
+	getCurrentHour() {
+		return timer(0, 1000).pipe(
+			map(() => moment().format('H:mm')),
+			distinctUntilChanged()
+		);
+	}
+
 	getChannelFromUrl() {
 		this.activatedRoute.params
 			.pipe(switchMap(({ tag }) => this.channelService.getChannel(tag)))
 			.subscribe({
 				next: (channel) => {
 					this.channel = channel;
-					this.getCurrentProgram(channel);
+					// this.getCurrentProgram(channel);
 					this.getCurrentIndexInChannels(channel);
 					this.decodeIframe(channel);
 				},
@@ -83,7 +95,7 @@ export class ChannelDetailComponent implements OnInit {
 
 	getCurrentProgram(res: Channel) {
 		if (res.schedules.length > 0) {
-			this.hour?.subscribe({
+			this.getCurrentHour().subscribe({
 				next: (hour) => {
 					const current = moment(hour, 'h:mm A');
 

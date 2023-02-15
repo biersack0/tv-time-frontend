@@ -7,12 +7,9 @@
 				<h5 class="text-center text-white position-relative" *ngIf="channel">
 					{{ channel.name | uppercase }}
 					<span class="position-absolute top-0 end-0 pr-hour">
-						{{ hour | async }}
+						{{ hour }}
 					</span>
 				</h5>
-				<h6 *ngIf="currentProgram" class="text-center text-white">
-					{{ currentProgram[0].title }}
-				</h6>
 			</div>
 
 			<div class="col-12">
@@ -89,54 +86,6 @@
 								>{{ category | titlecase }}</a
 							>
 						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- *ngIf="channel.schedules.length > 0" -->
-			<div *ngIf="channel && currentProgram">
-				<div class="col-12" *ngIf="channel.schedules.length > 0">
-					<div class="table-responsive fs-md mb-4">
-						<table class="table table-dark mb-0">
-							<thead>
-								<tr>
-									<th style="color: white !important">H.Inicio</th>
-									<th style="color: white !important">H.Fin</th>
-									<th style="color: white !important">Programa</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr *ngFor="let schedule of channel.schedules">
-									<td
-										class="py-2"
-										[ngClass]="
-											schedule.start === currentProgram[0].start
-												? 'text-primary'
-												: 'text-white'
-										">
-										{{ schedule.start }}
-									</td>
-									<td
-										class="py-2"
-										[ngClass]="
-											schedule.start === currentProgram[0].start
-												? 'text-primary'
-												: 'text-white'
-										">
-										{{ schedule.end }}
-									</td>
-									<td
-										class="py-2"
-										[ngClass]="
-											schedule.start === currentProgram[0].start
-												? 'text-primary'
-												: 'text-white'
-										">
-										{{ schedule.title }}
-									</td>
-								</tr>
-							</tbody>
-						</table>
 					</div>
 				</div>
 			</div>
