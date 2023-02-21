@@ -1,3 +1,4 @@
+import { environment } from './../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Channel } from '@app/interfaces/channel.interface';
@@ -6,10 +7,12 @@ import { Channel } from '@app/interfaces/channel.interface';
 	providedIn: 'root',
 })
 export class ChannelService {
-	private apiUrl = 'http://localhost:3005/api';
-	// private apiUrl = 'https://tv-time-api.dev.alexbsk.com/api';
+	// private apiUrl = 'http://localhost:3005/api';
+	private apiUrl: string;
 
-	constructor(private httpClient: HttpClient) {}
+	constructor(private httpClient: HttpClient) {
+		this.apiUrl = environment.apiUrl;
+	}
 
 	getAllChannel() {
 		return this.httpClient.get<Channel[]>(`${this.apiUrl}/channel`);
